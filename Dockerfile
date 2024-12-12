@@ -10,3 +10,19 @@ RUN sed -i 's/listen       80;/listen       8002;/g' /etc/nginx/conf.d/default.c
 # Expose port 8002
 EXPOSE 8002
 
+# Health Check Configuration
+
+# Install curl from (alpine package keeper) to use it for health check
+RUN apk add --no-cache curl
+
+# Copy the health check script to the container
+COPY health-check-script.sh /health-check-script.sh
+RUN chmod +x /health-check-script.sh
+
+
+# Health check configuration 
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD /health-check-script.sh
+
+# Expose port 8002
+EXPOSE 8002
